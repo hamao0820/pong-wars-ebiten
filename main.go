@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -40,6 +42,9 @@ type Game struct {
 	nightBall *Ball
 
 	squares [][]*Square
+
+	dayCount   int
+	nightCount int
 }
 
 func newGame() *Game {
@@ -71,6 +76,20 @@ func newGame() *Game {
 func (g *Game) Update() error {
 	g.dayBall.Update(g.squares)
 	g.nightBall.Update(g.squares)
+
+	dayCount := 0
+	nightCount := 0
+	for _, row := range g.squares {
+		for _, square := range row {
+			if square.color == dayColor {
+				dayCount++
+			} else {
+				nightCount++
+			}
+		}
+	}
+	g.dayCount = dayCount
+	g.nightCount = nightCount
 	return nil
 }
 
@@ -83,6 +102,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.dayBall.Draw(screen)
 	g.nightBall.Draw(screen)
+
+	msg := fmt.Sprintf("TPS: %0.2f\nFPS: %0.2f", ebiten.ActualTPS(), ebiten.ActualFPS())
+	msg += fmt.Sprintf("\nDay: %d\nNight: %d", g.dayCount, g.nightCount)
+	ebitenutil.DebugPrint(screen, msg)
+
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
