@@ -38,8 +38,7 @@ var (
 )
 
 type Game struct {
-	dayBall   *Ball
-	nightBall *Ball
+	balls []*Ball
 
 	squares [][]*Square
 
@@ -67,15 +66,18 @@ func newGame() *Game {
 	}
 
 	return &Game{
-		dayBall:   dayBall,
-		nightBall: nightBall,
-		squares:   squares,
+		balls: []*Ball{
+			dayBall,
+			nightBall,
+		},
+		squares: squares,
 	}
 }
 
 func (g *Game) Update() error {
-	g.dayBall.Update(g.squares)
-	g.nightBall.Update(g.squares)
+	for _, ball := range g.balls {
+		ball.Update(g.squares)
+	}
 
 	dayCount := 0
 	nightCount := 0
@@ -100,8 +102,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	g.dayBall.Draw(screen)
-	g.nightBall.Draw(screen)
+	for _, ball := range g.balls {
+		ball.Draw(screen)
+	}
 
 	msg := fmt.Sprintf("TPS: %0.2f\nFPS: %0.2f", ebiten.ActualTPS(), ebiten.ActualFPS())
 	msg += fmt.Sprintf("\nDay: %d\nNight: %d", g.dayCount, g.nightCount)
