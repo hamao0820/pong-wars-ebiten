@@ -69,8 +69,8 @@ func newGame() *Game {
 }
 
 func (g *Game) Update() error {
-	g.dayBall.Update()
-	g.nightBall.Update()
+	g.dayBall.Update(g.squares)
+	g.nightBall.Update(g.squares)
 	return nil
 }
 
