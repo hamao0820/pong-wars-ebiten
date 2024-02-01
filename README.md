@@ -7,3 +7,7 @@ Ebitengine で PongWars を作ってみました。
 ```sh
 go run .
 ```
+
+# 参考
+
+https://github.com/vnglst/pong-wars を参考にしました。
