@@ -27,18 +27,45 @@ var (
 	nightBallColor = color.RGBA{0xd9, 0xe8, 0xe3, 0xff} //#D9E8E3
 
 	ballR = float32(squareSize) / 2
+
+	numSquaresX = screenWidth / squareSize
+	numSquaresY = screenHeight / squareSize
+
+	dayColor   = color.RGBA{0xd9, 0xe8, 0xe3, 0xff}
+	nightColor = color.RGBA{0x11, 0x4c, 0x5a, 0xff}
 )
 
 type Game struct {
 	dayBall   *Ball
 	nightBall *Ball
+
+	squares [][]*Square
 }
 
 func newGame() *Game {
-	g := &Game{}
-	g.dayBall = newBall(dayBallX, dayBallY, dayBallDx, dayBallDy, dayBallColor)
-	g.nightBall = newBall(nightBallX, nightBallY, nightBallDx, nightBallDy, nightBallColor)
-	return g
+	dayBall := newBall(dayBallX, dayBallY, dayBallDx, dayBallDy, dayBallColor)
+	nightBall := newBall(nightBallX, nightBallY, nightBallDx, nightBallDy, nightBallColor)
+
+	squares := [][]*Square{}
+	for i := 0; i < numSquaresX; i++ {
+		squares = append(squares, []*Square{})
+		for j := 0; j < numSquaresY; j++ {
+			var color color.Color
+			if i < numSquaresX/2 {
+				color = dayColor
+			} else {
+				color = nightColor
+			}
+			square := newSquare(float32(i)*squareSize, float32(j)*squareSize, color)
+			squares[i] = append(squares[i], square)
+		}
+	}
+
+	return &Game{
+		dayBall:   dayBall,
+		nightBall: nightBall,
+		squares:   squares,
+	}
 }
 
 func (g *Game) Update() error {
@@ -48,6 +75,12 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	for _, row := range g.squares {
+		for _, square := range row {
+			square.Draw(screen)
+		}
+	}
+
 	g.dayBall.Draw(screen)
 	g.nightBall.Draw(screen)
 }
